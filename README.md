@@ -1,4 +1,4 @@
-# CloudOps Dashboard ☁️
+# CloudOps Dashboard 
 **An End-to-End DevOps Deployment Pipeline Project**  
 *Developed & Deployed by [Sourabh](https://github.com/Sourabh-50)*
 
@@ -6,7 +6,7 @@ This repository contains a professional, high-fidelity cloud operations and infr
 
 ---
 
-## 🚀 Key Features
+## Key Features
 
 *   **Glassmorphic Dark-Mode UI**: Built with modern CSS using glassmorphic cards, glowing element rings, and smooth rotating animation gauges.
 *   **Infrastructure Telemetry**: Automatically queries the host operating system to display server hostname, internal IP, OS type (e.g., Windows/Ubuntu), and dynamic resource loads (CPU and RAM).
@@ -18,7 +18,7 @@ This repository contains a professional, high-fidelity cloud operations and infr
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 
 ```text
 cloudops-dashboard/
@@ -38,7 +38,7 @@ cloudops-dashboard/
 
 ---
 
-## 🛠️ Tech Stack & Concepts
+##  Tech Stack & Concepts
 
 *   **Application**: Python 3.13, Flask, Gunicorn
 *   **Styling**: HTML5, Vanilla CSS3 (CSS Grid, Flexbox, Custom Properties, Keyframe Animations)
@@ -49,7 +49,7 @@ cloudops-dashboard/
 
 ---
 
-## 🏃 Step-by-Step Setup Guide
+##  Step-by-Step Setup Guide
 
 ### 1. Local Run (Development Environment)
 
