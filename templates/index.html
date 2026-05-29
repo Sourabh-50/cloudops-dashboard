@@ -183,7 +183,6 @@
     // Dynamic Metric Poller
     function pollMetrics() {
         fetch('/api/metrics')
-            .apiData = {}
             .then(res => res.json())
             .then(data => {
                 // Update text elements
