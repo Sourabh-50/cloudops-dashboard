@@ -183,3 +183,8 @@ sudo ./infrastructure/install_cloudwatch.sh
 
 ![SSH Terminal Execution](./Media/terminal_docker.jpeg)
 *(Telemetry log validation inside EC2 container via SSH)*
+
+### 4. CI/CD Pipeline Run History
+![Pipeline Run History](./Media/pipeline_history.jpeg)
+*(Iterative development history showing failed run debugging and consecutive successful GitOps builds)*
+
