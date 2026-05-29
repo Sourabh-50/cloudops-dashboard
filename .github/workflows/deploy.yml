@@ -1,0 +1,39 @@
+name: CI/CD Docker Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    name: Build & Push Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the code
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Docker Buildx (for caching and multi-platform builds)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Step 3: Login to Docker Hub
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Step 4: Build and Push Docker image
+      - name: Build and Push Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/cloudops-dashboard:latest
+            ${{ secrets.DOCKER_USERNAME }}/cloudops-dashboard:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

@@ -1,0 +1,14 @@
+.git
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+venv
+.env
+.github
+Dockerfile
+.dockerignore
+implementation_plan.md
+task.md
+walkthrough.md
+README.md

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudOps Dashboard - Live Infrastructure Status</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="glow-sphere sphere-1"></div>
+<div class="glow-sphere sphere-2"></div>
+
+<div class="container">
+    <header class="header">
+        <div class="logo">
+            <span class="pulse-indicator"></span>
+            <h1>CloudOps Dashboard</h1>
+        </div>
+        <p class="tagline">Production-Ready DevOps Deployment Project</p>
+    </header>
+
+    <div class="grid-layout">
+        <!-- SERVER METADATA CARD -->
+        <section class="card server-metadata">
+            <div class="card-header">
+                <h2>Infrastructure Details</h2>
+                <span class="badge badge-provider">{{ cloud_provider }}</span>
+            </div>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <span class="label">Server Hostname</span>
+                    <span class="value">{{ hostname }}</span>
+                </div>
+                <div class="metric-box">
+                    <span class="label">Internal IP</span>
+                    <span class="value">{{ ip_address }}</span>
+                </div>
+                <div class="metric-box">
+                    <span class="label">Environment</span>
+                    <span class="value font-accent">{{ environment }}</span>
+                </div>
+                <div class="metric-box">
+                    <span class="label">App Version</span>
+                    <span class="value">v{{ version }}</span>
+                </div>
+                <div class="metric-box">
+                    <span class="label">Build Number</span>
+                    <span class="value">#{{ build }}</span>
+                </div>
+                <div class="metric-box">
+                    <span class="label">Deployment Time</span>
+                    <span class="value time-value">{{ deployed }}</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SYSTEM STATS CARD -->
+        <section class="card system-stats">
+            <div class="card-header">
+                <h2>System Health Metrics</h2>
+            </div>
+            <div class="stats-row">
+                <div class="stat-circle-container">
+                    <div class="stat-label">CPU Load</div>
+                    <div class="stat-value">{{ stats.cpu_usage }}</div>
+                </div>
+                <div class="stat-circle-container">
+                    <div class="stat-label">Memory</div>
+                    <div class="stat-value">{{ stats.memory_usage }}</div>
+                </div>
+            </div>
+            <div class="metric-box full-width">
+                <span class="label">OS Runtime Info</span>
+                <span class="value">{{ stats.os }}</span>
+            </div>
+            <div class="metric-box full-width">
+                <span class="label">System Uptime</span>
+                <span class="value">{{ stats.uptime }}</span>
+            </div>
+        </section>
+
+        <!-- CONTAINER STATUS CARD -->
+        <section class="card containers-status">
+            <div class="card-header">
+                <h2>Active Docker Containers</h2>
+            </div>
+            <div class="containers-list">
+                {% for container in containers %}
+                <div class="container-item">
+                    <div class="container-info">
+                        <span class="container-name">{{ container.name }}</span>
+                        <span class="container-port">{{ container.port }}</span>
+                    </div>
+                    <div class="container-meta">
+                        <span class="container-uptime">{{ container.uptime }}</span>
+                        <span class="status-indicator status-{{ container.status }}">
+                            {{ container.status }}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- ENVIRONMENT VARIABLE VIEWER -->
+        <section class="card env-variables">
+            <div class="card-header">
+                <h2>Configuration Variables</h2>
+            </div>
+            <div class="env-list">
+                {% for key, val in safe_env.items() %}
+                <div class="env-item">
+                    <span class="env-key">{{ key }}</span>
+                    <span class="env-val">{{ val }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="actions-bar">
+        <a href="/health" target="_blank" class="btn btn-secondary">Health API Check</a>
+        <a href="/api/info" target="_blank" class="btn btn-secondary">Info API Check</a>
+        <button id="deployBtn" class="btn btn-primary">Trigger Deployment Simulation</button>
+    </div>
+</div>
+
+<script>
+    document.getElementById('deployBtn').addEventListener('click', function() {
+        const btn = this;
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '🔄 Re-deploying Pipeline...';
+        btn.style.opacity = '0.7';
+        
+        setTimeout(() => {
+            alert('Mock deploy pipeline successfully triggered! Docker image pulled and container restarted.');
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+            btn.style.opacity = '1';
+        }, 1500);
+    });
+</script>
+
+</body>
+</html>
