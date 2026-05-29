@@ -153,7 +153,23 @@ The `.github/workflows/deploy.yml` pipeline compiles and pushes the Docker conta
 
 ---
 
-## 📈 Monitoring & Maintenance
+## 📈 Telemetry, Monitoring & Infrastructure
 
-*   **View live container logs**: `docker logs -f webapp`
-*   **Monitor resource utilization**: `docker stats webapp`
+This project is configured with a high-fidelity monitoring and GitOps delivery stack:
+
+### 1. Real-Time Resource Telemetry
+*   **AWS CloudWatch Agent**: Installed via snap on the EC2 host. The configuration script publishes CPU, memory (`mem_used_percent`), and disk utilization (`disk_used_percent`) metrics back to the `CWAgent` namespace.
+*   **Dynamic Telemetry Polling**: The Flask dashboard backend queries CloudWatch API statistics using `boto3` (automatically resolving EC2 Instance IDs via AWS Metadata endpoints).
+*   **Fallback Agent**: In local/unconfigured environments, the app falls back to local machine resource monitoring using `psutil` and displays status flags directly in the UI.
+
+### 2. AWS CloudWatch Snap Installation
+Run the automated installation script inside your EC2 terminal:
+```bash
+chmod +x infrastructure/install_cloudwatch.sh
+sudo ./infrastructure/install_cloudwatch.sh
+```
+
+### 3. CI/CD Redeployment Trigger
+*   Clicking **Trigger Real CI/CD Deployment** in the web dashboard makes an authenticated API call to the GitHub Actions REST API, triggering a manual `workflow_dispatch` run of the CI/CD pipeline.
+*   The pipeline builds and pushes the updated Docker container, then connects via secure SSH keys to the EC2 host to perform image pulls and container recycling.
+

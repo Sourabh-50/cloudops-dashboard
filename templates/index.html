@@ -62,24 +62,29 @@
         <section class="card system-stats">
             <div class="card-header">
                 <h2>System Health Metrics</h2>
+                <span class="badge badge-provider" id="metrics-source">Agent: Fetching...</span>
             </div>
             <div class="stats-row">
-                <div class="stat-circle-container">
+                <div class="stat-circle-container" id="cpu-container">
                     <div class="stat-label">CPU Load</div>
-                    <div class="stat-value">{{ stats.cpu_usage }}</div>
+                    <div id="cpu-val" class="stat-value">{{ stats.cpu_usage }}</div>
                 </div>
-                <div class="stat-circle-container">
+                <div class="stat-circle-container" id="mem-container">
                     <div class="stat-label">Memory</div>
-                    <div class="stat-value">{{ stats.memory_usage }}</div>
+                    <div id="mem-val" class="stat-value">{{ stats.memory_usage }}</div>
+                </div>
+                <div class="stat-circle-container" id="disk-container">
+                    <div class="stat-label">Disk Usage</div>
+                    <div id="disk-val" class="stat-value">{{ stats.disk_usage if stats.disk_usage else '0%' }}</div>
                 </div>
             </div>
             <div class="metric-box full-width">
                 <span class="label">OS Runtime Info</span>
-                <span class="value">{{ stats.os }}</span>
+                <span id="os-val" class="value">{{ stats.os }}</span>
             </div>
             <div class="metric-box full-width">
                 <span class="label">System Uptime</span>
-                <span class="value">{{ stats.uptime }}</span>
+                <span id="uptime-val" class="value">{{ stats.uptime }}</span>
             </div>
         </section>
 
@@ -126,24 +131,150 @@
     <div class="actions-bar">
         <a href="/health" target="_blank" class="btn btn-secondary">Health API Check</a>
         <a href="/api/info" target="_blank" class="btn btn-secondary">Info API Check</a>
-        <button id="deployBtn" class="btn btn-primary">Trigger Deployment Simulation</button>
+        <button id="deployBtn" class="btn btn-primary">🚀 Trigger Real CI/CD Deployment</button>
     </div>
 </div>
 
+<!-- Toast Container for modern dynamic notifications -->
+<div id="toast-container" class="toast-container"></div>
+
 <script>
+    // Toast Notification System
+    function showToast(title, message, type = 'info', actionUrl = null, autoClose = 8000) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        
+        let content = `
+            <div class="toast-header">
+                <span class="toast-indicator"></span>
+                <strong>${title}</strong>
+            </div>
+            <div class="toast-body">${message}</div>
+        `;
+        
+        if (actionUrl) {
+            content += `
+                <div class="toast-footer">
+                    <a href="${actionUrl}" target="_blank" class="btn btn-secondary btn-sm">Monitor Workflow</a>
+                </div>
+            `;
+        }
+        
+        toast.innerHTML = content;
+        container.appendChild(toast);
+        
+        // Auto close handler
+        const timer = setTimeout(() => {
+            closeToast(toast);
+        }, autoClose);
+        
+        toast.addEventListener('click', () => {
+            clearTimeout(timer);
+            closeToast(toast);
+        });
+    }
+
+    function closeToast(toast) {
+        toast.style.animation = 'slideOut 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards';
+        setTimeout(() => toast.remove(), 400);
+    }
+
+    // Dynamic Metric Poller
+    function pollMetrics() {
+        fetch('/api/metrics')
+            .apiData = {}
+            .then(res => res.json())
+            .then(data => {
+                // Update text elements
+                document.getElementById('cpu-val').innerText = data.cpu_usage;
+                document.getElementById('mem-val').innerText = data.memory_usage;
+                document.getElementById('disk-val').innerText = data.disk_usage;
+                document.getElementById('uptime-val').innerText = data.uptime;
+                document.getElementById('os-val').innerText = data.os;
+                
+                const sourceBadge = document.getElementById('metrics-source');
+                sourceBadge.innerText = data.source;
+                
+                // Color coding CPU
+                const cpuVal = parseFloat(data.cpu_usage);
+                const cpuContainer = document.getElementById('cpu-container');
+                if (cpuVal > 75) {
+                    cpuContainer.style.setProperty('--gauge-color', '#ef4444');
+                    cpuContainer.style.setProperty('--gauge-glow', 'rgba(239, 68, 68, 0.2)');
+                } else if (cpuVal > 45) {
+                    cpuContainer.style.setProperty('--gauge-color', '#f59e0b');
+                    cpuContainer.style.setProperty('--gauge-glow', 'rgba(245, 158, 11, 0.2)');
+                } else {
+                    cpuContainer.style.setProperty('--gauge-color', 'var(--accent-blue)');
+                    cpuContainer.style.setProperty('--gauge-glow', 'rgba(59, 130, 246, 0.2)');
+                }
+
+                // Color coding Memory
+                const memVal = parseFloat(data.memory_usage);
+                const memContainer = document.getElementById('mem-container');
+                if (memVal > 80) {
+                    memContainer.style.setProperty('--gauge-color', '#ef4444');
+                } else if (memVal > 55) {
+                    memContainer.style.setProperty('--gauge-color', '#f59e0b');
+                } else {
+                    memContainer.style.setProperty('--gauge-color', 'var(--accent-purple)');
+                }
+
+                // Color coding Disk
+                const diskVal = parseFloat(data.disk_usage);
+                const diskContainer = document.getElementById('disk-container');
+                if (diskVal > 85) {
+                    diskContainer.style.setProperty('--gauge-color', '#ef4444');
+                } else if (diskVal > 60) {
+                    diskContainer.style.setProperty('--gauge-color', '#f59e0b');
+                } else {
+                    diskContainer.style.setProperty('--gauge-color', 'var(--accent-emerald)');
+                }
+            })
+            .catch(err => {
+                console.error("Metrics polling failed", err);
+                document.getElementById('metrics-source').innerText = "Agent Offline";
+            });
+    }
+
+    // Run first metrics fetch instantly and set interval
+    pollMetrics();
+    setInterval(pollMetrics, 5000);
+
+    // Deploy Pipeline Automation Event
     document.getElementById('deployBtn').addEventListener('click', function() {
         const btn = this;
         const originalText = btn.innerHTML;
         btn.disabled = true;
-        btn.innerHTML = '🔄 Re-deploying Pipeline...';
+        btn.innerHTML = '⚡ Deploying...';
         btn.style.opacity = '0.7';
         
-        setTimeout(() => {
-            alert('Mock deploy pipeline successfully triggered! Docker image pulled and container restarted.');
-            btn.disabled = false;
-            btn.innerHTML = originalText;
-            btn.style.opacity = '1';
-        }, 1500);
+        showToast('Deployment Request', 'Contacting GitHub Actions API to trigger production CI/CD rebuild...', 'info', null, 4000);
+        
+        fetch('/api/deploy', { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                btn.style.opacity = '1';
+                
+                if (data.status === 'success') {
+                    showToast('CI/CD Rebuild Triggered', data.message, 'success', data.actions_url, 12000);
+                } else if (data.status === 'simulated') {
+                    showToast('Simulation Mode', data.message, 'warning', null, 10000);
+                    showToast('Pipeline Secrets Needed', data.setup_instructions, 'info', null, 12000);
+                } else {
+                    showToast('Build Failed to Trigger', data.message, 'danger', data.actions_url, 10000);
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                btn.style.opacity = '1';
+                showToast('API Communication Error', 'Failed to submit deployment request to backend. Check console logs.', 'danger', null, 8000);
+                console.error("Deploy trigger failed", err);
+            });
     });
 </script>
 
