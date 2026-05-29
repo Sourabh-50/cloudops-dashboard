@@ -58,13 +58,13 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/cloudops-dashboard:latest
             
             # Safely stop and recycle the running container
-            docker stop webapp || true
-            docker rm webapp || true
+            docker stop cloudops-dashboard || true
+            docker rm cloudops-dashboard || true
             
-            # Spin up the container on port 80, injecting environment configurations
+            # Spin up the container on port 5000, injecting environment configurations
             docker run -d \
-              -p 80:5000 \
-              --name webapp \
+              -p 5000:5000 \
+              --name cloudops-dashboard \
               --restart unless-stopped \
               -e ENVIRONMENT="Production" \
               -e CLOUD_PROVIDER="AWS EC2 (t2.micro)" \
