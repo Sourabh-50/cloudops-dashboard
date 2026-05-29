@@ -1,12 +1,15 @@
-# CloudOps Dashboard 
+# CloudOps Dashboard ☁️
 **An End-to-End DevOps Deployment Pipeline Project**  
 *Developed & Deployed by [Sourabh](https://github.com/Sourabh-50)*
 
-This repository contains a professional, high-fidelity cloud operations and infrastructure monitoring dashboard built to demonstrate production-level DevOps engineering practices. The project showcases containerization, environment variable configurations, automated GitOps CI/CD pipelines, and cloud hosting on AWS EC2.
+## 🎥 Project Walkthrough (Live Video Demo)
+<video src="./Media/CloudOps%20Dashboard%20Live%20Demo%20.mp4" controls width="100%"></video>
 
 ---
 
-## Key Features
+This repository contains a professional, high-fidelity cloud operations and infrastructure monitoring dashboard built to demonstrate production-level DevOps engineering practices. The project showcases containerization, environment variable configurations, automated GitOps CI/CD pipelines, and cloud hosting on AWS EC2.
+
+## 🚀 Key Features
 
 *   **Glassmorphic Dark-Mode UI**: Built with modern CSS using glassmorphic cards, glowing element rings, and smooth rotating animation gauges.
 *   **Infrastructure Telemetry**: Automatically queries the host operating system to display server hostname, internal IP, OS type (e.g., Windows/Ubuntu), and dynamic resource loads (CPU and RAM).
@@ -18,7 +21,7 @@ This repository contains a professional, high-fidelity cloud operations and infr
 
 ---
 
-##  Project Structure
+## 📂 Project Structure
 
 ```text
 cloudops-dashboard/
@@ -38,7 +41,7 @@ cloudops-dashboard/
 
 ---
 
-##  Tech Stack & Concepts
+## 🛠️ Tech Stack & Concepts
 
 *   **Application**: Python 3.13, Flask, Gunicorn
 *   **Styling**: HTML5, Vanilla CSS3 (CSS Grid, Flexbox, Custom Properties, Keyframe Animations)
@@ -49,7 +52,7 @@ cloudops-dashboard/
 
 ---
 
-##  Step-by-Step Setup Guide
+## 🏃 Step-by-Step Setup Guide
 
 ### 1. Local Run (Development Environment)
 
@@ -58,17 +61,14 @@ cloudops-dashboard/
     git clone https://github.com/Sourabh-50/cloudops-dashboard.git
     cd cloudops-dashboard
     ```
-
 2.  Install dependencies:
     ```bash
     pip install -r requirements.txt
     ```
-
 3.  Run the application:
     ```bash
     python app.py
     ```
-
 4.  Access the endpoints:
     *   Dashboard: [http://localhost:5000](http://localhost:5000)
     *   Health probe: [http://localhost:5000/health](http://localhost:5000/health)
@@ -101,12 +101,10 @@ Test configuration management locally by running the application with custom env
     ```bash
     docker build -t cloudops-dashboard .
     ```
-
 2.  **Run the container** (running in the background on port 5000):
     ```bash
     docker run -d -p 5000:5000 --name cloudops-app cloudops-dashboard
     ```
-
 3.  **Run with production environment configuration**:
     ```bash
     docker run -d -p 5000:5000 --name cloudops-prod -e ENVIRONMENT="Production" -e CLOUD_PROVIDER="AWS EC2" -e BUILD_NUMBER="109" cloudops-dashboard
@@ -162,6 +160,11 @@ This project is configured with a high-fidelity monitoring and GitOps delivery s
 *   **Dynamic Telemetry Polling**: The Flask dashboard backend queries CloudWatch API statistics using `boto3` (automatically resolving EC2 Instance IDs via AWS Metadata endpoints).
 *   **Fallback Agent**: In local/unconfigured environments, the app falls back to local machine resource monitoring using `psutil` and displays status flags directly in the UI.
 
+![Live Telemetry UI](./Media/CloudOps%20Dashboard.jpeg)
+*(Dynamic telemetry dashboard showing live resource gauges)*
+
+---
+
 ### 2. AWS CloudWatch Snap Installation
 Run the automated installation script inside your EC2 terminal:
 ```bash
@@ -169,7 +172,14 @@ chmod +x infrastructure/install_cloudwatch.sh
 sudo ./infrastructure/install_cloudwatch.sh
 ```
 
+---
+
 ### 3. CI/CD Redeployment Trigger
 *   Clicking **Trigger Real CI/CD Deployment** in the web dashboard makes an authenticated API call to the GitHub Actions REST API, triggering a manual `workflow_dispatch` run of the CI/CD pipeline.
 *   The pipeline builds and pushes the updated Docker container, then connects via secure SSH keys to the EC2 host to perform image pulls and container recycling.
 
+![Self-Deploy Webhook Toasts](./Media/deployment_toast.jpeg)
+*(Glassmorphic toast alerts when trigger action runs)*
+
+![SSH Terminal Execution](./Media/terminal_docker.jpeg)
+*(Telemetry log validation inside EC2 container via SSH)*
