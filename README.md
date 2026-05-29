@@ -3,7 +3,7 @@
 *Developed & Deployed by [Sourabh](https://github.com/Sourabh-50)*
 
 ## 🎥 Project Walkthrough (Live Video Demo)
-<video src="./Media/CloudOps%20Dashboard%20Live%20Demo%20.mp4" controls width="100%"></video>
+<video src="./Media/CloudOps_Dashboard_Live_Demo.mp4" controls width="100%"></video>
 
 ---
 
@@ -160,7 +160,7 @@ This project is configured with a high-fidelity monitoring and GitOps delivery s
 *   **Dynamic Telemetry Polling**: The Flask dashboard backend queries CloudWatch API statistics using `boto3` (automatically resolving EC2 Instance IDs via AWS Metadata endpoints).
 *   **Fallback Agent**: In local/unconfigured environments, the app falls back to local machine resource monitoring using `psutil` and displays status flags directly in the UI.
 
-![Live Telemetry UI](./Media/CloudOps%20Dashboard.jpeg)
+![Live Telemetry UI](./Media/CloudOps_Dashboard.jpeg)
 *(Dynamic telemetry dashboard showing live resource gauges)*
 
 ---
