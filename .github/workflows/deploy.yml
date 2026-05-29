@@ -57,13 +57,29 @@ jobs:
             echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
             docker pull ${{ secrets.DOCKER_USERNAME }}/cloudops-dashboard:latest
             
-            # Safely stop and recycle the running container
-            docker stop cloudops-dashboard || true
-            docker rm cloudops-dashboard || true
+            # Stop any container running on port 80 to prevent conflicts
+            PORT_80_CONTAINERS=$(docker ps -q --filter publish=80)
+            if [ ! -z "$PORT_80_CONTAINERS" ]; then
+              echo "Stopping containers holding port 80: $PORT_80_CONTAINERS"
+              docker stop $PORT_80_CONTAINERS || true
+              docker rm $PORT_80_CONTAINERS || true
+            fi
             
-            # Spin up the container on port 5000, injecting environment configurations
+            # Stop any container running on port 5000 to prevent conflicts
+            PORT_5000_CONTAINERS=$(docker ps -q --filter publish=5000)
+            if [ ! -z "$PORT_5000_CONTAINERS" ]; then
+              echo "Stopping containers holding port 5000: $PORT_5000_CONTAINERS"
+              docker stop $PORT_5000_CONTAINERS || true
+              docker rm $PORT_5000_CONTAINERS || true
+            fi
+            
+            # Ensure containers with target names are also cleared
+            docker stop cloudops-dashboard webapp || true
+            docker rm cloudops-dashboard webapp || true
+            
+            # Spin up the container on port 80, injecting environment configurations
             docker run -d \
-              -p 5000:5000 \
+              -p 80:5000 \
               --name cloudops-dashboard \
               --restart unless-stopped \
               -e ENVIRONMENT="Production" \
